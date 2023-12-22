@@ -9,6 +9,7 @@ namespace TemplatingBenchmarks
         {
             // Run benchmarks
             BenchmarkRunner.Run<StringReplacementBenchmark>();
+            BenchmarkRunner.Run<ConditionalBenchmark>();
         }
     }
 }

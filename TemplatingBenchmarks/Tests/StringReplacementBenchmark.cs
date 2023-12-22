@@ -1,9 +1,12 @@
-﻿using BenchmarkDotNet.Attributes;
+﻿using System.Text;
+
+using BenchmarkDotNet.Attributes;
 using Fluid;
 using HandlebarsDotNet;
 using Mustache;
 using SmartFormat;
 using TemplatingBenchmarks.Config;
+using TemplatingBenchmarks.Helpers;
 
 namespace TemplatingBenchmarks.Tests
 {
@@ -14,6 +17,7 @@ namespace TemplatingBenchmarks.Tests
         private readonly string _StringReplacementRawText = "Hello, {{name}}!";
         private readonly object _StringReplacementData = new { name = "John" };
         private readonly string _SmartFormatTemplate = "Hello, {name}!";
+        private StringBuilder builder;
 
         #region DotLiquid
 
@@ -118,6 +122,26 @@ namespace TemplatingBenchmarks.Tests
             return Smart.Format(_SmartFormatTemplate, _StringReplacementData);
         }
 
+        #endregion
+
+        #region Custom
+
+        [GlobalSetup(Target = nameof(CustomBenchmark))]
+        public void customSetup()
+        {
+            builder = new StringBuilder();
+        }
+
+        [Benchmark]
+        public string CustomBenchmark()
+        {
+            builder.Clear();
+            builder.Append(_StringReplacementRawText);
+
+            CustomTemplatingHelper.ReplacePlaceholder(ref builder,"{{name}}", (_StringReplacementData as dynamic).name);
+
+            return builder.ToString();
+        }
         #endregion
 
     }
